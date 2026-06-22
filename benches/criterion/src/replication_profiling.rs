@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use lightyear::prelude::{NetworkTarget, Replicate};
 use lightyear_tests::protocol::CompFull;
 use lightyear_tests::stepper::{ClientServerStepper, StepperConfig};
+#[cfg(unix)]
 use std::fs::File;
 
 const NUM_FRAMES: usize = 100;
@@ -20,6 +21,7 @@ fn main() {
     // advance time by one frame
     stepper.advance_time(stepper.frame_duration);
 
+    #[cfg(unix)]
     let guard = pprof::ProfilerGuardBuilder::default()
         .frequency(10000)
         .blocklist(&["libc", "libgcc", "pthread", "vdso"])
@@ -40,6 +42,7 @@ fn main() {
         });
     }
 
+    #[cfg(unix)]
     if let Ok(report) = guard.report().build() {
         let file = File::create("flamegraph.svg").unwrap();
         report.flamegraph(file).unwrap();

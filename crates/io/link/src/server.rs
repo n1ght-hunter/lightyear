@@ -78,7 +78,7 @@ impl Server {
 /// despawning the server entity when the last link is removed.
 #[derive(Component, Clone, Copy, PartialEq, Eq, Debug, Reflect)]
 #[component(on_insert = LinkOf::on_insert_hook)]
-#[component(on_replace = LinkOf::on_replace)]
+#[component(on_remove = LinkOf::on_replace)]
 pub struct LinkOf {
     /// Server endpoint that owns this link entity.
     pub server: Entity,

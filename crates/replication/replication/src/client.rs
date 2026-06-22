@@ -3,7 +3,7 @@ use bevy_ecs::prelude::*;
 use bevy_state::prelude::*;
 
 #[cfg(any(feature = "prediction", feature = "interpolation"))]
-use bevy_replicon::client::server_mutate_ticks::ServerMutateTicks;
+use bevy_replicon::client::server_mutate_ticks::MutateTickReceived;
 use bevy_replicon::prelude::*;
 use bevy_replicon::shared::server_entity_map::ServerEntityMap;
 use lightyear_connection::client::{Client, Connected};
@@ -98,24 +98,24 @@ impl Plugin for RepliconClientPlugin {
 
 #[cfg(any(feature = "prediction", feature = "interpolation"))]
 fn sync_checkpoint_last_confirmed_tick(
-    server_mutate_ticks: Res<ServerMutateTicks>,
+    mut reader: bevy_ecs::message::MessageReader<MutateTickReceived>,
     mut checkpoints: ResMut<ReplicationCheckpointMap>,
 ) {
-    let Some(replicon_tick) = server_mutate_ticks.last_confirmed_tick() else {
-        return;
-    };
-    if checkpoints
-        .record_last_confirmed_tick(replicon_tick)
-        .is_none()
-    {
-        error!(
-            ?replicon_tick,
-            "missing authoritative checkpoint mapping for completed mutate tick"
-        );
-        debug_assert!(
-            false,
-            "missing authoritative checkpoint mapping for completed mutate tick"
-        );
+    for msg in reader.read() {
+        let replicon_tick = msg.tick;
+        if checkpoints
+            .record_last_confirmed_tick(replicon_tick)
+            .is_none()
+        {
+            error!(
+                ?replicon_tick,
+                "missing authoritative checkpoint mapping for completed mutate tick"
+            );
+            debug_assert!(
+                false,
+                "missing authoritative checkpoint mapping for completed mutate tick"
+            );
+        }
     }
 }
 

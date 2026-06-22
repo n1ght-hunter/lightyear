@@ -103,7 +103,7 @@ pub type Replicate = ReplicationTarget<()>;
 #[derive(Component, Clone, Default, Debug, PartialEq, Reflect)]
 #[require(ReplicationState)]
 #[component(on_insert = ReplicationTarget::<T>::on_insert)]
-#[component(on_replace = ReplicationTarget::<T>::on_replace)]
+#[component(on_remove = ReplicationTarget::<T>::on_replace)]
 pub struct ReplicationTarget<T: ReplicationTargetT> {
     mode: ReplicationMode,
     #[reflect(ignore)]

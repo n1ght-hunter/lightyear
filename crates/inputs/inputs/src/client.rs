@@ -59,6 +59,7 @@ use bevy_app::{
 };
 use bevy_ecs::entity::MapEntities;
 use bevy_ecs::prelude::*;
+use bevy_ecs::query::IterQueryData;
 use bevy_time::{Real, Time, Timer, TimerMode};
 use bevy_utils::prelude::DebugName;
 use lightyear_connection::host::HostClient;
@@ -353,7 +354,9 @@ fn get_action_state<S: ActionStateSequence>(
         ),
         Allow<PredictionDisable>,
     >,
-) {
+) where
+    <<S as ActionStateSequence>::State as ActionStateQueryData>::Mut: IterQueryData,
+{
     let Ok((input_timeline, input_config, is_rollback)) = sender.single() else {
         return;
     };
@@ -471,7 +474,9 @@ fn get_delayed_action_state<S: ActionStateSequence>(
         // Filter so that this is only for directly controlled players, not remote players
         (With<S::Marker>, Allow<PredictionDisable>),
     >,
-) {
+) where
+    <<S as ActionStateSequence>::State as ActionStateQueryData>::Mut: IterQueryData,
+{
     let Ok((client_entity, input_timeline, is_rollback)) = sender.single() else {
         return;
     };

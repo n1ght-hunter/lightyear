@@ -16,7 +16,7 @@ use bevy_ecs::prelude::Has;
 use bevy_ecs::{
     entity::{Entity, MapEntities},
     error::Result,
-    query::With,
+    query::{IterQueryData, With},
     resource::Resource,
     schedule::{IntoScheduleConfigs, SystemSet},
     system::{Commands, Query, Res, Single},
@@ -524,7 +524,9 @@ fn update_action_state<S: ActionStateSequence>(
         StateMut<S>,
         &mut InputBuffer<S::Snapshot, S::Action>,
     )>,
-) {
+) where
+    <<S as ActionStateSequence>::State as ActionStateQueryData>::Mut: IterQueryData,
+{
     let (server, host_client) = server.into_inner();
     let tick = timeline.tick();
     for (entity, action_state, mut input_buffer) in action_state_query.iter_mut() {

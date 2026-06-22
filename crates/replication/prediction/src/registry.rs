@@ -947,7 +947,7 @@ pub trait PredictionAppRegistrationExt {
     #[deprecated(note = "use `app.local_rollback::<C>()` instead")]
     fn add_rollback<C: SyncComponent>(&mut self) -> ComponentRegistration<'_, C>;
 
-    fn add_resource_rollback<R: Resource + Clone>(&mut self);
+    fn add_resource_rollback<R: Resource<Mutability = bevy_ecs::component::Mutable> + Clone>(&mut self);
 }
 
 fn add_local_rollback<C: SyncComponent>(app: &mut App) -> ComponentRegistration<'_, C> {
@@ -971,7 +971,7 @@ impl PredictionAppRegistrationExt for App {
         add_local_rollback::<C>(self)
     }
 
-    fn add_resource_rollback<R: Resource + Clone>(&mut self) {
+    fn add_resource_rollback<R: Resource<Mutability = bevy_ecs::component::Mutable> + Clone>(&mut self) {
         // skip if there is no PredictionRegistry (i.e. the PredictionPlugin wasn't added)
         if self.world().get_resource::<PredictionRegistry>().is_none() {
             return;

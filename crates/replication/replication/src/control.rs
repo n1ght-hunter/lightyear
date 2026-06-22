@@ -74,7 +74,7 @@ impl ControlledBy {
     }
 
     fn on_replace(
-        trigger: On<Replace, ControlledBy>,
+        trigger: On<Discard, ControlledBy>,
         controlled_by: Query<&ControlledBy>,
         control_bit: Res<ControlBit>,
         mut sender: Query<&mut ClientVisibility, With<ReplicationSender>>,
